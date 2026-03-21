@@ -321,7 +321,7 @@ export default function DashboardPage() {
                 <div style={{ textAlign: "right", flexShrink: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>{log.quantity} units</div>
                   <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
-                    {new Date(log.dispensedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                    {(() => { const d = new Date(log.dispensedAt); const h = d.getUTCHours(); const m = String(d.getUTCMinutes()).padStart(2, "0"); return `${h % 12 || 12}:${m} ${h >= 12 ? "pm" : "am"}`; })()}
                   </div>
                 </div>
               </div>

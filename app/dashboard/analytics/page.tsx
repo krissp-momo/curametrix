@@ -97,7 +97,7 @@ export default function AnalyticsPage() {
                   <BarChart data={monthlyRevenue} barGap={2}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
                     <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#64748B" }} axisLine={false} tickLine={false} />
-                    <YAxis tickFormatter={v => `₹${(v/1000).toFixed(0)}K`} tick={{ fontSize: 11, fill: "#64748B" }} axisLine={false} tickLine={false} />
+                    <YAxis tickFormatter={v => `₹${(v / 1000).toFixed(0)}K`} tick={{ fontSize: 11, fill: "#64748B" }} axisLine={false} tickLine={false} />
                     <Tooltip formatter={(v: any) => formatCurrency(v)} contentStyle={{ borderRadius: 8, fontSize: 13, border: "1px solid var(--border)" }} />
                     <Bar dataKey="revenue" fill="#0EA5E9" radius={[3, 3, 0, 0]} name="Revenue" />
                     <Bar dataKey="cost" fill="#F59E0B" radius={[3, 3, 0, 0]} name="Cost" />
@@ -130,7 +130,7 @@ export default function AnalyticsPage() {
                 <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Wastage by Type</div>
                 <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
-                    <Pie data={wastageData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent*100).toFixed(0)}%`} labelLine={false}>
+                    <Pie data={wastageData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
                       {wastageData.map((e, i) => <Cell key={i} fill={e.color} />)}
                     </Pie>
                     <Tooltip formatter={(v: any) => formatCurrency(v)} />
@@ -147,13 +147,13 @@ export default function AnalyticsPage() {
                         const total = wastageData.reduce((s, x) => s + x.value, 0);
                         return (
                           <tr key={w.category}>
-                            <td><span style={{ display:"flex", alignItems:"center", gap:8 }}><div style={{ width:10, height:10, borderRadius:3, background:w.color }} />{w.category}</span></td>
-                            <td><span style={{ fontFamily:"JetBrains Mono, monospace", fontWeight:700 }}>{formatCurrency(w.value)}</span></td>
-                            <td><span className="badge badge-warning">{((w.value/total)*100).toFixed(1)}%</span></td>
+                            <td><span style={{ display: "flex", alignItems: "center", gap: 8 }}><div style={{ width: 10, height: 10, borderRadius: 3, background: w.color }} />{w.category}</span></td>
+                            <td><span style={{ fontFamily: "JetBrains Mono, monospace", fontWeight: 700 }}>{formatCurrency(w.value)}</span></td>
+                            <td><span className="badge badge-warning">{((w.value / total) * 100).toFixed(1)}%</span></td>
                           </tr>
                         );
                       })}
-                      <tr><td style={{ fontWeight:700 }}>Total</td><td style={{ fontWeight:800, fontFamily:"JetBrains Mono, monospace" }}>{formatCurrency(wastageData.reduce((s,w)=>s+w.value,0))}</td><td>100%</td></tr>
+                      <tr><td style={{ fontWeight: 700 }}>Total</td><td style={{ fontWeight: 800, fontFamily: "JetBrains Mono, monospace" }}>{formatCurrency(wastageData.reduce((s, w) => s + w.value, 0))}</td><td>100%</td></tr>
                     </tbody>
                   </table>
                 </div>
@@ -171,8 +171,8 @@ export default function AnalyticsPage() {
                         {g.data.map(d => (
                           <tr key={d.name}>
                             <td style={{ fontWeight: 600 }}>{d.name}</td>
-                            <td><span style={{ fontFamily:"JetBrains Mono,monospace", color: g.color, fontWeight:700 }}>{d.units}</span></td>
-                            <td><span style={{ fontFamily:"JetBrains Mono,monospace", fontWeight:700 }}>{formatCurrency(d.value)}</span></td>
+                            <td><span style={{ fontFamily: "JetBrains Mono,monospace", color: g.color, fontWeight: 700 }}>{d.units}</span></td>
+                            <td><span style={{ fontFamily: "JetBrains Mono,monospace", fontWeight: 700 }}>{formatCurrency(d.value)}</span></td>
                           </tr>
                         ))}
                       </tbody>

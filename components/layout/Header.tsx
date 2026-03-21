@@ -1,19 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, Search, ChevronDown, AlertTriangle, User, LogOut, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Bell, Search, ChevronDown, AlertTriangle, User, LogOut, Settings, HelpCircle, RefreshCw } from "lucide-react";
+import Link from "next/link";
 import { mockAlerts } from "@/lib/mockData";
 
 const activeAlerts = mockAlerts.filter(a => a.status === "active");
 
 export default function Header({ pageTitle }: { pageTitle?: string }) {
+  const router = useRouter();
   const [showNotifs, setShowNotifs] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showEmergency, setShowEmergency] = useState(false);
 
   return (
     <>
-      <header className="header" style={{ marginLeft: 0, gap: 12 }}>
+      <header className="header" style={{ marginLeft: 0, gap: 12, zIndex: 100 }}>
         {/* Page Title */}
         <div style={{ flex: 1 }}>
           {pageTitle && (
@@ -92,9 +95,9 @@ export default function Header({ pageTitle }: { pageTitle?: string }) {
                 ))}
               </div>
               <div style={{ padding: "10px 16px" }}>
-                <a href="/dashboard/alerts" style={{ fontSize: 13, color: "var(--accent)", fontWeight: 600, textDecoration: "none" }}>
+                <Link href="/dashboard/alerts" onClick={() => setShowNotifs(false)} style={{ fontSize: 13, color: "var(--accent)", fontWeight: 600, textDecoration: "none" }}>
                   View all notifications →
-                </a>
+                </Link>
               </div>
             </div>
           )}
@@ -125,29 +128,63 @@ export default function Header({ pageTitle }: { pageTitle?: string }) {
           </button>
 
           {showProfile && (
-            <div style={{
-              position: "absolute", top: 46, right: 0, width: 200,
-              background: "white", borderRadius: 12,
-              border: "1px solid var(--border)",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.12)", zIndex: 100, overflow: "hidden",
-            }}>
+            <div
+              onClick={e => e.stopPropagation()}
+              style={{
+                position: "absolute", top: 46, right: 0, width: 230,
+                background: "white", borderRadius: 12,
+                border: "1px solid var(--border)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.18)", zIndex: 200, overflow: "hidden",
+              }}
+            >
               {[
-                { icon: User, label: "My Profile", href: "/dashboard/settings" },
-                { icon: Settings, label: "Settings", href: "/dashboard/settings" },
-                { icon: LogOut, label: "Sign Out", href: "/login" },
-              ].map(item => (
-                <a key={item.label} href={item.href} style={{
-                  display: "flex", alignItems: "center", gap: 10,
-                  padding: "11px 14px", textDecoration: "none",
-                  fontSize: 14, color: item.label === "Sign Out" ? "var(--danger)" : "var(--text)",
-                  fontWeight: 500, transition: "background 0.15s",
-                }}
-                  onMouseEnter={e => (e.currentTarget.style.background = "#f8fafc")}
-                  onMouseLeave={e => (e.currentTarget.style.background = "white")}
+                { icon: User, label: "My Profile", href: "/dashboard/users" },
+                { icon: Settings, label: "Account Settings", href: "/dashboard/users" },
+                { icon: Bell, label: "Notification Preferences", href: "/dashboard/users" },
+                { icon: RefreshCw, label: "Switch to Pharmacist View", action: () => alert('Role switching will be enabled with Firebase Auth.') },
+                { icon: HelpCircle, label: "Help & Support", action: () => alert('Opening Help Center (mock).') },
+                { divider: true, label: "div1" },
+                { icon: LogOut, label: "Sign Out", href: "/login", danger: true },
+              ].map(item => item.divider ? (
+                <div key={item.label} style={{ height: 1, background: "var(--border)", margin: "4px 0" }} />
+              ) : item.href ? (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setShowProfile(false)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 10, width: "100%",
+                    padding: "11px 16px", cursor: "pointer", textDecoration: "none",
+                    fontSize: 13, color: item.danger ? "var(--danger)" : "var(--text)",
+                    fontWeight: 600, transition: "background 0.15s",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = item.danger ? "#fef2f2" : "#f8fafc")}
+                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
                 >
-                  <item.icon size={15} />
+                  {item.icon && <item.icon size={15} />}
                   {item.label}
-                </a>
+                </Link>
+              ) : (
+                <button
+                  key={item.label}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (item.action) item.action();
+                    setShowProfile(false);
+                  }}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 10, width: "100%",
+                    padding: "11px 16px", cursor: "pointer",
+                    fontSize: 13, color: item.danger ? "var(--danger)" : "var(--text)",
+                    fontWeight: 600, transition: "background 0.15s",
+                    background: "none", border: "none", textAlign: "left",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = item.danger ? "#fef2f2" : "#f8fafc")}
+                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
+                >
+                  {item.icon && <item.icon size={15} />}
+                  {item.label}
+                </button>
               ))}
             </div>
           )}
