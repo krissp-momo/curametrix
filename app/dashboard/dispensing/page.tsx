@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { FileText, Clock, TrendingUp, X, Plus, Search } from "lucide-react";
 import { formatDate } from "@/lib/utils";
