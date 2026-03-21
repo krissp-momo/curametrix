@@ -167,6 +167,7 @@ export default function AlertsPage() {
   };
 
   const filtered = alerts.filter(a => {
+    if (activeTab === "all") return true;
     if (activeTab === "ai_orders") return a.type === "auto_order" || a.type === "transfer";
     return a.type === activeTab;
   });
