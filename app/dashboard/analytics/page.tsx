@@ -130,7 +130,7 @@ export default function AnalyticsPage() {
                 <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Wastage by Type</div>
                 <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
-                    <Pie data={wastageData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                    <Pie data={wastageData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`} labelLine={false}>
                       {wastageData.map((e, i) => <Cell key={i} fill={e.color} />)}
                     </Pie>
                     <Tooltip formatter={(v: any) => formatCurrency(v)} />
