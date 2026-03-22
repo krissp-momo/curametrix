@@ -9,21 +9,25 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
     "clsx": "^2.1.1",
     "firebase": "^12.11.0",
     "firebase-admin": "^13.7.0",
     "lucide-react": "^0.577.0",
     "next": "16.2.1",
+    "nodemailer": "^8.0.3",
     "papaparse": "^5.5.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "recharts": "^3.8.0",
     "tailwind-merge": "^3.5.0",
+    "twilio": "^5.13.0",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/nodemailer": "^7.0.11",
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",

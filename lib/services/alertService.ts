@@ -1,5 +1,6 @@
 import { adminDb } from '../firebaseAdmin';
 import { Alert, AlertType, AlertSeverity } from '../../types';
+import { notifyAlert } from './notificationService';
 
 const COLLECTION = 'alerts';
 
@@ -20,8 +21,19 @@ export async function createAlert(alertData: Omit<Alert, 'id' | 'createdAt' | 's
     id: docRef.id,
     createdAt: new Date(),
     status: 'active',
+    smsSent: false,
+    emailSent: false,
   };
   await docRef.set(newAlert);
+
+  // Fire SMS + Email notifications asynchronously (don't block the response)
+  notifyAlert(newAlert.title, newAlert.message, newAlert.severity)
+    .then(async ({ smsSent, emailSent }) => {
+      // Update doc with real notification status
+      await docRef.update({ smsSent, emailSent });
+    })
+    .catch(err => console.error('[Notification] Failed:', err));
+
   return newAlert;
 }
 
