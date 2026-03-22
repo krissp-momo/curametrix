@@ -21,20 +21,27 @@ export async function sendSMS(message: string): Promise<boolean> {
     return false;
   }
 
-  // Lazy-require twilio only on the server
-  const twilio = await import('twilio');
-  const client = twilio.default(accountSid, authToken);
-
   let sent = false;
-  for (const to of toNumbers) {
-    try {
-      await client.messages.create({ body: message, from: fromNumber, to });
-      console.log(`[SMS] Sent to ${to}`);
-      sent = true;
-    } catch (err) {
-      console.error(`[SMS] Failed to send to ${to}:`, err);
+
+  try {
+    // Safely import twilio (handles CJS/ESM interop in Next.js Turbopack)
+    const twilioPkg = await import('twilio');
+    const twilioClientFactory = twilioPkg.default || twilioPkg;
+    const client = twilioClientFactory(accountSid, authToken);
+
+    for (const to of toNumbers) {
+      try {
+        const msg = await client.messages.create({ body: message, from: fromNumber, to });
+        console.log(`[SMS] Sent to ${to}. SID: ${msg.sid}`);
+        sent = true;
+      } catch (err) {
+        console.error(`[SMS] Failed to send to ${to}:`, err);
+      }
     }
+  } catch (initErr) {
+    console.error('[SMS] Failed to initialize Twilio client:', initErr);
   }
+
   return sent;
 }
 
