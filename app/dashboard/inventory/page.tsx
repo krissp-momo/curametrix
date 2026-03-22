@@ -6,6 +6,7 @@ import { getHazardWarning } from "@/lib/utils";
 import type { Medicine } from "@/types";
 import Papa from "papaparse";
 import { fetchWithAuth } from "@/lib/api";
+import { mockMedicines } from "@/lib/mockData";
 
 const categoryColors: Record<string, string> = {
   antibiotic: "#0EA5E9", antidiabetic: "#10B981", cardiovascular: "#1E3A8A",
@@ -279,8 +280,8 @@ function AddMedicineDrawer({ onClose }: { onClose: () => void }) {
 }
 
 export default function InventoryPage() {
-  const [medicines, setMedicines] = useState<Medicine[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [medicines, setMedicines] = useState<Medicine[]>(mockMedicines);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -293,11 +294,9 @@ export default function InventoryPage() {
       try {
         const res = await fetchWithAuth('/api/medicines');
         const data = await res.json();
-        if (data.medicines) setMedicines(data.medicines);
+        if (data.medicines?.length > 0) setMedicines(data.medicines);
       } catch (err) {
-        console.error("Failed to fetch medicines:", err);
-      } finally {
-        setLoading(false);
+        console.error("Using demo data: API unavailable", err);
       }
     }
     fetchMedicines();

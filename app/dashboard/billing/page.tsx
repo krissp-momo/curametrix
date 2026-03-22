@@ -5,6 +5,7 @@ import { Search, Plus, Minus, Trash2, Printer, CreditCard, Banknote, Smartphone,
 import { formatCurrency } from "@/lib/utils";
 import type { Medicine } from "@/types";
 import { fetchWithAuth } from "@/lib/api";
+import { mockMedicines } from "@/lib/mockData";
 
 interface CartItem {
   id: string;
@@ -15,24 +16,22 @@ interface CartItem {
 }
 
 export default function BillingPage() {
-  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [medicines, setMedicines] = useState<Medicine[]>(mockMedicines);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [search, setSearch] = useState("");
   const [patientName, setPatientName] = useState("");
   const [doctorName, setDoctorName] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cash");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchMedicines() {
       try {
         const res = await fetchWithAuth('/api/medicines');
         const data = await res.json();
-        if (data.medicines) setMedicines(data.medicines);
+        if (data.medicines?.length > 0) setMedicines(data.medicines);
       } catch (err) {
-        console.error("Failed to fetch medicines:", err);
-      } finally {
-        setLoading(false);
+        console.error("Using demo data: API unavailable", err);
       }
     }
     fetchMedicines();

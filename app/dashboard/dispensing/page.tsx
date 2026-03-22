@@ -5,6 +5,7 @@ import { FileText, Clock, TrendingUp, X, Plus, Search } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import type { DispensingLog, Medicine } from "@/types";
 import { fetchWithAuth } from "@/lib/api";
+import { mockDispensingLogs } from "@/lib/mockData";
 
 function NewDispenseDrawer({ onClose, onSave }: { onClose: () => void, onSave: () => void }) {
   const [formData, setFormData] = useState({
@@ -93,18 +94,18 @@ function NewDispenseDrawer({ onClose, onSave }: { onClose: () => void, onSave: (
 }
 
 export default function DispensingPage() {
-  const [logs, setLogs] = useState<DispensingLog[]>([]);
+  const [logs, setLogs] = useState<DispensingLog[]>(mockDispensingLogs);
   const [showAdd, setShowAdd] = useState(false);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const fetchLogs = async () => {
     try {
       const res = await fetchWithAuth('/api/dispense');
       const data = await res.json();
-      if (data.logs) setLogs(data.logs);
+      if (data.logs?.length > 0) setLogs(data.logs);
     } catch (err) {
-      console.error(err);
+      console.error("Using demo data: API unavailable", err);
     } finally {
       setLoading(false);
     }
