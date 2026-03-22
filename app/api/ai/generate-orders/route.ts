@@ -8,6 +8,20 @@ export async function POST(req: NextRequest) {
     
     const medSnap = await adminDb.collection('medicines').where('hospitalId', '==', hospitalId).get();
     
+    // Fallback data if DB is empty
+    let availableMedicines: Partial<Medicine>[] = [];
+    if (medSnap.empty) {
+      availableMedicines = [
+        { name: "Insulin Glargine", category: "cold_chain", genericName: "insulin", totalQuantity: 120 },
+        { name: "Paracetamol 500mg", category: "analgesic", genericName: "paracetamol", totalQuantity: 300 },
+        { name: "Amoxicillin 250mg", category: "antibiotic", genericName: "amoxicillin", totalQuantity: 80 },
+        { name: "Metformin 500mg", category: "antidiabetic", genericName: "metformin", totalQuantity: 150 },
+        { name: "Saline IV Fluid", category: "general", genericName: "sodium chloride", totalQuantity: 200 }
+      ];
+    } else {
+      availableMedicines = medSnap.docs.map(doc => doc.data() as Medicine);
+    }
+    
     // Simulate Weather-based ML trends
     const weatherConditions = ["monsoon", "summer_heatwave", "winter_chill", "normal"];
     const currentWeather = weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
@@ -20,12 +34,11 @@ export async function POST(req: NextRequest) {
       const batch = adminDb.batch();
       
       // Shuffle medicines and pick 1 to 3 random ones to trigger
-      const shuffled = [...medSnap.docs].sort(() => 0.5 - Math.random());
+      const shuffled = [...availableMedicines].sort(() => 0.5 - Math.random());
       const selectedDocs = shuffled.slice(0, Math.floor(Math.random() * 3) + 1);
       
-      for (const doc of selectedDocs) {
-        const med = doc.data() as Medicine;
-        
+      for (const item of selectedDocs) {
+        const med = item as Medicine;
         let multiplier = 1.0;
         if (currentWeather === "monsoon" && (med.category === "antibiotic" || med.genericName.toLowerCase().includes("paracetamol"))) {
           multiplier = 1.5; 
