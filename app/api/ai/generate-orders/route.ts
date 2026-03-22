@@ -85,12 +85,16 @@ export async function POST(req: NextRequest) {
 
     // After commit, fire off notifications asynchronously and update their status
     const { notifyAlert } = await import('@/lib/services/notificationService');
-    for (const { ref, alert } of orders) {
-      notifyAlert(alert.title, alert.message, alert.severity)
-        .then(async ({ smsSent, emailSent }) => {
-          await ref.update({ smsSent, emailSent });
-        })
-        .catch(err => console.error('[AI Orders] Notification failed:', err));
+    for (let i = 0; i < orders.length; i++) {
+      const { ref, alert } = orders[i];
+      try {
+        const { smsSent, emailSent } = await notifyAlert(alert.title, alert.message, alert.severity);
+        await ref.update({ smsSent, emailSent });
+        orders[i].alert.smsSent = smsSent;
+        orders[i].alert.emailSent = emailSent;
+      } catch (err) {
+        console.error('[AI Orders] Notification failed:', err);
+      }
     }
     
     return NextResponse.json({ success: true, ordersGenerated: orders.length, weather: currentWeather, orders: orders.map(o => o.alert) });

@@ -26,13 +26,15 @@ export async function createAlert(alertData: Omit<Alert, 'id' | 'createdAt' | 's
   };
   await docRef.set(newAlert);
 
-  // Fire SMS + Email notifications asynchronously (don't block the response)
-  notifyAlert(newAlert.title, newAlert.message, newAlert.severity)
-    .then(async ({ smsSent, emailSent }) => {
-      // Update doc with real notification status
-      await docRef.update({ smsSent, emailSent });
-    })
-    .catch(err => console.error('[Notification] Failed:', err));
+  // Asynchronously send notifications wait for it to finish so Next.js doesn't kill the promise
+  try {
+    const { smsSent, emailSent } = await notifyAlert(newAlert.title, newAlert.message, newAlert.severity);
+    await docRef.update({ smsSent, emailSent });
+    newAlert.smsSent = smsSent;
+    newAlert.emailSent = emailSent;
+  } catch (err) {
+    console.error('[Alert Service] Notification failed:', err);
+  }
 
   return newAlert;
 }
